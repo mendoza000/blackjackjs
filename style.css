@@ -1,0 +1,44 @@
+html, body{
+	margin: 0;
+	padding: 0;
+	background-color: #2f4f30;
+	color: #fff;
+}
+
+.header{
+	background-color: #222;
+	padding: 0.3em;
+}
+.header_title{
+	text-align: center;
+}
+
+.btn{
+	width: 130px;
+	margin: 0.5em 1em;
+}
+
+.carta{
+	position: relative;
+	height: 180px;
+	left: 100px;
+	margin-left: -75px;
+	transition: all 1s;
+}
+
+#cpu-cartas, #jugador-cartas{
+	height: 180px;
+}
+
+footer{
+	background-color: #222;
+	height: 70px;
+	margin-bottom: 0;
+}
+
+
+@media screen and (max-width: 375px){
+	.carta{
+		height: 160px;
+	}
+}
