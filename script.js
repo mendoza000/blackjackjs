@@ -68,6 +68,7 @@ const turnoCompu = ( puntosMinimos) =>{
 			break;
 		}
 	}while(totalCPU < puntosMinimos && totalCPU < 21);
+
 }
 
 
@@ -104,7 +105,7 @@ btnStop.addEventListener('click', async function() {
 	btnStop.disabled = true;
 	await turnoCompu(totalPlayer);
 
-	if (totalPlayer > totalCPU) {
+	if (totalPlayer > totalCPU && totalPlayer <= 21 && totalCPU <= 21) {
 		console.log("Gano la partida! 👌");
 		alert("Gano la partida! 👌")
 	}else{
