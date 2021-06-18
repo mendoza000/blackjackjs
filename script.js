@@ -105,7 +105,7 @@ btnStop.addEventListener('click', async function() {
 	btnStop.disabled = true;
 	await turnoCompu(totalPlayer);
 
-	if (totalPlayer > totalCPU && totalPlayer <= 21 && totalCPU <= 21) {
+	if (totalPlayer <= 21 && totalCPU > 21) {
 		console.log("Gano la partida! 👌");
 		alert("Gano la partida! 👌")
 	}else{
