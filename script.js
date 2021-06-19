@@ -75,11 +75,18 @@ const turnoCompu = ( puntosMinimos) =>{
 
 /*Eventos de botones*/
 
-btnPedir.addEventListener('click', function() {
+btnPedir.addEventListener('click', async function() {
 	const carta = pedirCarta();
 	const valor = valorCarta(carta);
 
 	playerC.innerHTML += (`<img class="carta animate__animated animate__rotateInDownLeft" src="./assets/cartas/${carta}.png" alt="">`)
+
+	await setTimeout(function() {
+		const ls = playerC.querySelectorAll('img');
+
+		ls[ls.length-1].setAttribute('class', 'carta');
+	}, 1000);
+
 	totalPlayer = totalPlayer + valor
 	scores[0].innerText = (`${totalPlayer}`)
 
