@@ -60,7 +60,7 @@ const turnoCompu = ( puntosMinimos) =>{
 		const carta = pedirCarta();
 		const valor = valorCarta(carta);
 
-		cpuC.innerHTML += (`<img class="carta" src="./assets/cartas/${carta}.png" alt="">`)
+		cpuC.innerHTML += (`<img class="carta animate__animated animate__rotateInDownLeft" src="./assets/cartas/${carta}.png" alt="">`)
 		totalCPU = totalCPU + valor
 		scores[1].innerText = (`${totalCPU}`)
 
@@ -79,7 +79,7 @@ btnPedir.addEventListener('click', function() {
 	const carta = pedirCarta();
 	const valor = valorCarta(carta);
 
-	playerC.innerHTML += (`<img class="carta" src="./assets/cartas/${carta}.png" alt="">`)
+	playerC.innerHTML += (`<img class="carta animate__animated animate__rotateInDownLeft" src="./assets/cartas/${carta}.png" alt="">`)
 	totalPlayer = totalPlayer + valor
 	scores[0].innerText = (`${totalPlayer}`)
 
