@@ -1,3 +1,7 @@
+:root{
+	--blue: #f93021;
+}
+
 html, body{
 	margin: 0;
 	padding: 0;
@@ -30,12 +34,27 @@ html, body{
 	height: 180px;
 }
 
-footer{
+.footer{
 	background-color: #222;
-	height: 70px;
-	margin-bottom: 0;
+	height: 50px;
+	/*position: absolute;
+	bottom: 0;*/
+	width: 100vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
+.footer span{
+	text-align: center;
+}
+
+@media screen and (min-width: 768px){
+	.footer{
+		position: absolute;
+		bottom: 0
+	}
+}
 
 @media screen and (max-width: 375px){
 	.carta{

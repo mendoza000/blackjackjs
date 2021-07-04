@@ -1,141 +1,163 @@
-/*
-2s = dos de espada
-2c = dos de trebol
-2h = dos de corazon
-2d = dos de diamante
-*/
 
-let maso = []
-const letras = ["S", "C", "H", "D"]
-const especiales = ["J", "Q", "K", "A"]
-let totalPlayer = 0, totalCPU = 0
+(() => {
 
-const btnPedir = document.querySelector('#btnPedir');
-const btnStop  = document.querySelector('#btnStop');
-const btnNewStart = document.querySelector('#btnNewStart');
-const playerC  = document.querySelector('#jugador-cartas');
-const cpuC     = document.querySelector('#cpu-cartas'); 
-const scores   = document.querySelectorAll('small');
+	'use strict'
 
-console.log(scores);
+	let maso = [], 
+		puntosJugadores = [] 
 
-/*funcion para crear el maso y revolverlo*/
-const createMaso = () => {
-	for (let i = 2; i <= 10; i++) {
-		for (letra of letras) {
-			maso.push(`${i}${letra}`)
+	const letras = ["S", "C", "H", "D"],
+		  especiales = ["J", "Q", "K", "A"]
+
+	const btnPedir = document.querySelector('#btnPedir'),
+	      btnStop  = document.querySelector('#btnStop'),
+	      btnNewStart = document.querySelector('#btnNewStart'),
+	      playerC  = document.querySelector('#jugador-cartas'),
+	      cpuC     = document.querySelector('#cpu-cartas'), 
+	      scores   = document.querySelectorAll('small');
+
+	/*Inicializa el juego*/
+	const initGame = (numPlayers = 2) =>{
+		maso = []
+		puntosJugadores = []
+		createMaso()
+
+
+		for (let i = 0; i < numPlayers; i++) puntosJugadores.push(0)
+
+		btnPedir.disabled = false
+		btnStop.disabled = false
+
+		for(let i = 0; i < scores.length; i++) scores[i].innerText = ("0")
+
+		playerC.innerHTML = ("")
+		cpuC.innerHTML = ("")
+	};
+
+
+	/*funcion para crear el maso y revolverlo*/
+	const createMaso = () => {
+		for (let i = 2; i <= 10; i++) {
+			for (let letra of letras) maso.push(`${i}${letra}`)
 		}
+
+		for (let lEsp of especiales) {
+			for (let letra of letras) maso.push(`${lEsp}${letra}`)
+		}
+
+		return maso = _.shuffle(maso)
 	}
 
-	for (lEsp of especiales) {
-		for (letra of letras) {
-			maso.push(`${lEsp}${letra}`)
-		}
+	initGame()
+
+	/*funcion para pedir una carta*/
+
+	const pedirCarta = () => {
+
+		if (maso.length === 0) throw "No hay mas cartas en el maso";
+		return maso.shift();
 	}
 
-	return maso = _.shuffle(maso)
-}
+	/*Funcion para saber el valor de la newCard*/
 
-createMaso()
+	const valorCarta = ( carta ) =>{
+		const valor = carta.substring(0, carta.length - 1)
 
-/*funcion para pedir una carta*/
+		return (!isNaN(valor)) ? parseInt(valor) : (valor === "A") ? 11 : 10
+	}
 
-const pedirCarta = () => {
+	const acumularPuntos = (turno, carta) =>{
+		puntosJugadores[turno] = puntosJugadores[turno] + valorCarta(carta)
+		scores[turno].innerText = (`${puntosJugadores[turno]}`)
+	}
 
-	if (maso.length === 0) throw "No hay mas cartas en el maso";
-	return maso.shift();
-}
+	const turnoCompu = ( puntosMinimos) =>{
+		do{
+			const carta = pedirCarta();
+			const valor = valorCarta(carta);
 
-/*Funcion para saber el valor de la newCard*/
+			cpuC.innerHTML += (`<img class="carta animate__animated animate__rotateInDownLeft" src="./assets/cartas/${carta}.png" alt="">`)
+			
+			acumularPuntos(puntosJugadores.length-1, carta)
 
-const valorCarta = ( carta ) =>{
-	const valor = carta.substring(0, carta.length - 1)
+			if (puntosMinimos > 21) break;
 
-	return (!isNaN(valor)) ? parseInt(valor) : (valor === "A") ? 11 : 10
-}
+		}while(puntosJugadores[puntosJugadores.length-1] < puntosMinimos && puntosJugadores[puntosJugadores.length-1] < 21);
+
+	}
 
 
-const turnoCompu = ( puntosMinimos) =>{
-	do{
+
+	/*Eventos de botones*/
+
+	btnPedir.addEventListener('click', async function() {
 		const carta = pedirCarta();
 		const valor = valorCarta(carta);
 
-		cpuC.innerHTML += (`<img class="carta animate__animated animate__rotateInDownLeft" src="./assets/cartas/${carta}.png" alt="">`)
-		totalCPU = totalCPU + valor
-		scores[1].innerText = (`${totalCPU}`)
+		playerC.innerHTML += (`<img class="carta animate__animated animate__rotateInDownLeft" src="./assets/cartas/${carta}.png" alt="">`)
 
-		if (puntosMinimos > 21) {
-			break;
+		await setTimeout(function() {
+			const ls = playerC.querySelectorAll('img');
+
+			ls[0, ls.length-1].setAttribute('class', 'carta');
+		}, 1000);
+
+		acumularPuntos(0, carta)
+
+		if (puntosJugadores[0] > 21) {
+			btnPedir.disabled = true
+			btnStop.disabled = true
+			turnoCompu(puntosJugadores[0])
+			setTimeout(function() {
+				console.warn("Perdio la partida! 👎");
+				alert("Perdio la partida! 👎")
+			}, 20);
+		}else if (puntosJugadores[0] === 21) {
+			btnPedir.disabled = true
+			btnStop.disabled = true
+			turnoCompu(puntosJugadores[0])
+
+			setTimeout(function() {
+				console.warn("21 puntos, excelente! 👌");
+				alert("21 puntos, excelente! 👌")
+			}, 20);
 		}
-	}while(totalCPU < puntosMinimos && totalCPU < 21);
 
-}
+	});
 
+	/*funcion para acabar el turno*/
+	btnStop.addEventListener('click', async function() {
+		btnPedir.disabled = true;
+		btnStop.disabled = true;
+		await turnoCompu(puntosJugadores[0]);
 
+		setTimeout(function() {
+			if (puntosJugadores[0] === puntosJugadores[puntosJugadores.length-1]) {
+			console.log("Nadie gana, quedaron en tablas. 🤝");
+			alert("Nadie gana, quedaron en tablas. 🤝");
 
-/*Eventos de botones*/
+			}else if (puntosJugadores[0] === 21 && puntosJugadores[puntosJugadores.length-1] > 21) {
+				console.log("Gano la partida! 👌");
+				alert("Gano la partida! 👌")
 
-btnPedir.addEventListener('click', async function() {
-	const carta = pedirCarta();
-	const valor = valorCarta(carta);
+			}else if (puntosJugadores[0] < 21 && puntosJugadores[puntosJugadores.length-1] > 21) {
+				console.log("Gano la partida! 👌");
+				alert("Gano la partida! 👌")
 
-	playerC.innerHTML += (`<img class="carta animate__animated animate__rotateInDownLeft" src="./assets/cartas/${carta}.png" alt="">`)
+			}else{
+				console.log("Perdio la partida! 👎");
+				alert("Perdio la partida! 👎")
 
-	await setTimeout(function() {
-		const ls = playerC.querySelectorAll('img');
+			}
+		}, 500);
 
-		ls[ls.length-1].setAttribute('class', 'carta');
-	}, 1000);
-
-	totalPlayer = totalPlayer + valor
-	scores[0].innerText = (`${totalPlayer}`)
-
-	if (totalPlayer > 21) {
-		btnPedir.disabled = true
-		btnStop.disabled = true
-		console.warn("Perdio la partida! 👎");
-		alert("Perdio la partida! 👎")
-		turnoCompu(totalPlayer)
-	}else if (totalPlayer === 21) {
-		console.warn("21 puntos, excelente! 👌");
-		alert("21 puntos, excelente! 👌")
-		btnPedir.disabled = true
-		btnStop.disabled = true
-		turnoCompu(totalPlayer)
-	}
-
-});
-
-/*funcion para acabar el turno*/
-btnStop.addEventListener('click', async function() {
-	btnPedir.disabled = true;
-	btnStop.disabled = true;
-	await turnoCompu(totalPlayer);
-
-	if (totalPlayer === 21 && totalCPU > 21) {
-		console.log("Gano la partida! 👌");
-		alert("Gano la partida! 👌")
-	}else if (totalPlayer < 21 && totalCPU > 21) {
-		console.log("Gano la partida! 👌");
-		alert("Gano la partida! 👌")
-	}else{
-		console.log("Perdio la partida! 👎");
-		alert("Perdio la partida! 👎")
-	}
-});
+	});
 
 
-btnNewStart.addEventListener("click", function() {
-	btnPedir.disabled = false
-	btnStop.disabled = false
+	btnNewStart.addEventListener("click", function() {
 
-	totalPlayer = 0, totalCPU = 0
-	scores[0].innerText = (`${totalPlayer}`)
-	scores[1].innerText = (`${totalCPU}`)
-	maso = []
-	createMaso()
+		initGame()
 
-	playerC.innerHTML = (``)
-	cpuC.innerHTML = (``)
+	})
 
-})
+})();
